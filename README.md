@@ -27,7 +27,5 @@ This is the easiest way to run WBulk.
 1. Install the requirements: `pip install -r requirements.txt` - **Python2 isn't accepted anymore**
 2. Run the script: `python WBulk.py`
 
-
 # CAUTION
-
 Do not expose the `ChromeProfile` folder to nobody! It may contain sensitive data! 

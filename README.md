@@ -9,7 +9,7 @@
 
 ## How to start WBulk
 
-In order for WBulk to run you need to have Chrome v99 installed. Check the chrome version by clicking [here](chrome://settings/help). 
+In order for WBulk to run you need to have Chrome v99 installed. Check the chrome version by accessing this link inside Chrome browser: `chrome://settings/help`. 
 
 If the verison differs, please [download the chromedriver](https://chromedriver.chromium.org/downloads) for your Chrome version and put it in the root of WBulk folder (overwriting the old chromedriver.exe file).
 

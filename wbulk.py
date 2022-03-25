@@ -1,3 +1,4 @@
+from lib2to3.pgen2 import driver
 from selenium import webdriver
 import os
 from selenium.webdriver.chrome.options import Options
@@ -9,23 +10,20 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from tkinter import messagebox
 
+### Program Path ###
+programPath = os.path.dirname(os.path.realpath(__file__))
 
 ### Tkinter window ###
 window = Tk()
 window.title("WBulk")
 window.resizable(False, False)
 window.geometry("350x300")
-
-### Program Path ###
-programPath = os.path.dirname(os.path.realpath(__file__))
+window.iconbitmap("%s\\icons\\wbulk.ico" % programPath)
 
 ### Chrome Options ###
 chrome_options = Options()
 chrome_options.add_argument('log-level=3')
 chrome_options.add_argument("user-data-dir=%s\\ChromeProfile" % programPath)
-
-### DRIVER ###
-driver = webdriver.Chrome(executable_path="%s\\chromedriver.exe" % programPath, chrome_options=chrome_options)
 
 ### Icons ###
 spamButtonIcon = PhotoImage(file="%s\\icons\\ok.png" % programPath)
@@ -61,16 +59,20 @@ def init():
   titleLabel.pack(anchor=N, pady=(15, 0))
 
   descriptionLabel = Label(window, text="Send SPAM WhatsApp messages!", font=(None, 10))
-  descriptionLabel.pack(anchor=N, pady=(2, 30))
+  descriptionLabel.pack(anchor=N, pady=(2, 0))
+
 
   gridBox = Frame(window)
-  gridBox.pack(side=TOP)
+  gridBox.pack(side=TOP, pady=(30, 0))
 
   targetLabel = Label(gridBox, text="Target")
   targetLabel.grid(column=0, row=0, padx=(0, 3))
 
   targetInput = Entry(gridBox, width=20)
   targetInput.grid(row=0, column=1)
+
+  infoLabel = Label(window, text="Check 'wbulk.config' to edit the settings!", fg="red")
+  infoLabel.pack(side=BOTTOM)
 
   spamButton = Button(window, command=lambda:start(targetInput.get()), border="0", image=spamButtonIcon)
   spamButton.pack(side=RIGHT, anchor=SE)
@@ -81,7 +83,7 @@ def init():
   window.mainloop()
 
 
-def sendMessage(times, target):
+def sendMessage(times, target, driver):
   i = 1
   try:
     # Search the target
@@ -99,22 +101,29 @@ def sendMessage(times, target):
         driver.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button').click()
       except Exception as e:
         print("Error 4: %s" % e)
+        messagebox.showerror("Error 4", "Error 4 occurred. Details: %s" % e)
       i = i + 1
       # Wait an amount of time
       sleep(int(delay))
     print("Job completed. Sent %s messages to %s" % (times, target))
     messagebox.showinfo("Job completed", "Job completed. Sent %s messages to %s" % (times, target))
+
+    # Exit when the last message is sent
+    driver.quit()
+    exit()
   except Exception as e:
     print("Error 3: %s" % e)
+    messagebox.showerror("Error 3", "Error 3 occurred. Details: %s" % e)
 
 
-def login(targetInput):
+def login(targetInput, driver):
   try:
     WebDriverWait(driver, 120).until(EC.presence_of_element_located((By.XPATH, '//*[@id="side"]/div[1]/div'))) # Check of the browser confirms the login
     print("Login correct! Good job.")
     # Send messages script
-    sendMessage(int(runTimes), targetInput)
+    sendMessage(int(runTimes), targetInput, driver)
   except Exception as e:
+    messagebox.showerror("Error 2", "Error 2 occurred. Details: %s" % e)
     print("Error 2: %s" % e)
 
 
@@ -122,8 +131,11 @@ def start(targetInput):
   if targetInput == "":
     init()
   else:
-    question = messagebox.askquestion("SPAM %s?", "Are you sure you want to send %s messages to %s? Make a responsable decision!" % (int(runTimes), targetInput), icon='warning')
+    question = messagebox.askquestion("SPAM %s?" % targetInput, "Are you sure you want to send %s messages to %s? Make a responsable decision!" % (int(runTimes), targetInput), icon='warning')
     if question == "yes":
+      ### DRIVER ###
+      driver = webdriver.Chrome(executable_path="%s\\chromedriver.exe" % programPath, chrome_options=chrome_options)
+      
       window.destroy()
       driver.get("https://web.whatsapp.com/")
 
@@ -131,16 +143,11 @@ def start(targetInput):
       try:
         driver.find_element_by_xpath('//*[@id="app"]/div[1]/div/div[1]/div')
         print("WBulk -> Please log in.")
-        login(targetInput)
+        login(targetInput, driver)
       except NoSuchElementException:
-        login(targetInput)
+        login(targetInput, driver)
       except Exception as e:
         print("Error 1: %s" % e)
-    else:
-      driver.quit()
-      exit()
+        messagebox.showerror("Error 1", "Error 1 occurred. Details: %s" % e)
 
 init()
-# Exit when the last message is sent
-driver.quit()
-exit()

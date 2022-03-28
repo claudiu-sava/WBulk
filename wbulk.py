@@ -90,10 +90,14 @@ def init():
 def sendMessage(datas, driver):
   i = 1
   try:
-    # Search the target
-    targetButton = driver.find_elements_by_xpath("//*[contains(text(), '%s')]" % datas[0])
-    # Click the target to open the chat
-    targetButton[0].click()
+    try:
+      # Search the target
+      targetButton = driver.find_elements_by_xpath("//*[contains(text(), '%s')]" % datas[0])
+
+      # Click the target to open the chat
+      targetButton[0].click()
+    except Exception as e:
+      print("Error 5: Details: %s" % e)
 
     while i <= int(datas[1]):
       try:

@@ -1,6 +1,6 @@
 # WBulk - WhatsApp Bulk Message Sender
 
-
+![WBulk image](https://github.com/claudiu-sava/WBulk/blob/main/WBulk.PNG?raw=true)
 
 # How to use
 **Caution! This tool runs on Windows OS only!**
